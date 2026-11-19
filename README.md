@@ -6,6 +6,8 @@ A full-stack web app for a small team (3-10 people) to run work in a simple agil
 a **durable background-job system** (assignment notifications, due-date reminders, report generation) with
 retries, exponential backoff and dead-lettering.
 
+Live Demo: https://kpit-agile-tracker.onrender.com
+
 > Built for the KPIT Full-Stack Intern assignment. Walkthrough video: `demo/walkthrough.mp4` (see [Demo](#demo)).
 
 | | |
@@ -22,7 +24,7 @@ retries, exponential backoff and dead-lettering.
 ## Quick start
 
 ```bash
-git clone <this-repo> && cd agile-tracker
+git clone https://github.com/Bolagani-Baby-Prasanna/kpit-agile-tracker && cd kpit-agile-tracker
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
@@ -257,6 +259,16 @@ inline-style attribute being blocked by the CSP, and a falsy value leaking into 
 part of the code and the reasoning behind these design choices.
 
 ---
+## Deployment Notes
+
+The application is deployed on Render using its free tier. The following limitations should be considered:
+
+- **Database persistence:** The free-tier filesystem is ephemeral. Since the application uses SQLite, database contents may be lost when the service restarts or is redeployed.
+- **Background worker:** The background worker runs within the application process. On the free tier, the service may sleep during periods of inactivity, so scheduled tasks such as the hourly due-date scan will not execute while the service is asleep.
+- **Secret key:** The `SECRET_KEY` environment variable is configured in Render to support secure authentication token generation and validation. Keeping this key stable across restarts prevents existing tokens from becoming invalid unnecessarily.
+- **HTTPS:** Render terminates TLS and provides HTTPS for the deployed application. Communication between users and the public application is therefore encrypted in transit.
+
+These are deployment limitations of the current setup. Future improvements include using persistent database storage, a dedicated background worker and a managed database service for improved reliability.
 
 ## What I would improve or build next
 
